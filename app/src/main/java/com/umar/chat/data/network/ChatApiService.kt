@@ -12,6 +12,7 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.websocket.WebSockets
 import io.ktor.client.plugins.websocket.webSocket
 import io.ktor.client.request.get
+import io.ktor.client.request.patch
 import io.ktor.http.HttpMethod
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.websocket.Frame
@@ -60,6 +61,14 @@ class ChatApiService {
 
             val reason = closeReason.await()
             Log.d("ChatLog", "Websocket close reason: $reason")
+        }
+    }
+
+    suspend fun updateUnread(jid: String, csid: String) {
+        try {
+            client.patch("$baseURL/update-unread?jid=$jid&csid=$csid")
+        } catch (e: Exception) {
+            throw e
         }
     }
 }

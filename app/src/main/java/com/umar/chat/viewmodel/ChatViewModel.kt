@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.umar.chat.data.model.Chat
+import com.umar.chat.data.model.Message
 import com.umar.chat.data.network.ChatApiService
 import com.umar.chat.data.repository.UserManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -75,8 +76,23 @@ class ChatViewModel @Inject constructor(
                             else -> chats
                         }
                     }
-
                 }
         }
+    }
+
+    private fun updateUnread(message: Message) {
+        val metadata = message.metadata
+        val jid = metadata.jid
+        val csid = userManager.getCsId()
+
+        viewModelScope.launch {
+            try {
+                chatApiService.updateUnread(jid, csid)
+                Log.i("ChatLog", "Updated unread for jid: $jid csid: $csid")
+            } catch (e: Exception) {
+                Log.e("ChatLog", "Failed to update unread for jid: $jid csid: $csid -  ${e.message}", e)
+            }
+        }
+
     }
 }
