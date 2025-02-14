@@ -1,27 +1,16 @@
 package com.umar.chat.data.model
 
+import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
-
-/**
- * Utility function to parse message dynamically.
- */
-fun parseMessage(mt: String, jsonElement: JsonElement?): Message? {
-    return jsonElement?.let { msgJson ->
-        when (mt) {
-            "text" -> PushChat.json.decodeFromJsonElement(TextMessage.serializer(), msgJson)
-            else -> null
-        }
-    }
-}
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.polymorphic
 
 @Serializable
 sealed class Message {
     abstract val timestamp: Long
     abstract val metadata: Metadata
-
     abstract fun getJid(): String
 }
 
@@ -33,6 +22,7 @@ data class Metadata(
 )
 
 @Serializable
+@SerialName("text") // ✅ Must match JSON field
 data class TextMessage(
     val conversation: String,
     val pushname: String,
@@ -48,29 +38,16 @@ data class Chat(
     val csid: String,
     val status: String,
     val unread: Int,
-    val message: JsonElement? = null, // Automatically deserializes to the correct type
-    // extended field
+    val message: Message? = null, // ✅ Will auto-detect type
     val isOnline: Boolean = false,
-    val mt: String = ""
-) {
-    /**
-     * Deserialize the `message` field dynamically.
-     */
-    fun parseMessage(mt: String): Message? = parseMessage(mt, message)
-}
-
+)
 
 @Serializable
 data class PushChatData(
     val isInitial: Boolean,
-    val initialChat: Chat? = null, // Nullable like `omitempty`
-    val message: JsonElement? = null // Dynamic message field
-) {
-    /**
-     * Universal method to parse a message based on `mt`.
-     */
-    fun parseMessage(mt: String): Message? = parseMessage(mt, message)
-}
+    val initialChat: Chat? = null,
+    val message: Message? = null
+)
 
 @Serializable
 data class PushChat(
@@ -78,13 +55,32 @@ data class PushChat(
     val data: PushChatData
 ) {
     companion object {
-        val json = Json { ignoreUnknownKeys = true } // Global JSON instance
+        // ✅ Register Message subclasses
+        private val messageModule = SerializersModule {
+            polymorphic(Message::class) {
+                subclass(TextMessage::class, TextMessage.serializer())
+            }
+        }
 
-        fun fromJson(jsonString: String): PushChat {
-            return json.decodeFromString(jsonString)
+        // ✅ Use "type" as class discriminator (without conflicting `type` property)
+        val json = Json {
+            ignoreUnknownKeys = true
+            classDiscriminator = "type" // ✅ Automatically determines subclass
+            serializersModule = messageModule
+        }
+
+        fun fromJson(json: String): PushChat {
+            return Json.decodeFromString(json)
         }
     }
 }
+
+@Serializable
+data class ApiResponse<T>(
+    val success: Boolean,
+    val message: String,
+    val data: T
+)
 
 
 fun main() {
@@ -94,51 +90,22 @@ fun main() {
             "data": {
                 "isInitial": false,
                 "message": {
-                    "conversation": "How do you do?",
-                    "metadata": {
-                        "fromme": false,
-                        "id": "A1B2C3D4E5F605",
-                        "jid": "6285773027798@s.whatsapp.net"
-                    },
-                    "pushname": "Emma Davis",
-                    "timestamp": 1738402565
-                }
-            }
-        }
-    """.trimIndent()
-
-
-    val jsonStringInitial = """
-        {
-            "mt": "text",
-            "data": {
-                "isInitial": false,
-                "initialChat": {
-                    "jid": "6281316057489@s.whatsapp.net",
-                    "csid": "xyz",
-                    "status": "queued",
-                    "unread": 1,
-                    "message": {
-                        "conversation": "How do you do?",
-                        "metadata": {
-                            "fromme": false,
-                            "id": "A1B2C3D4E5F605",
-                            "jid": "6285773027798@s.whatsapp.net"
-                        },
+                        "type": "text",
+                        "conversation": "Gasken",
                         "pushname": "Emma Davis",
-                        "timestamp": 1738402565
+                        "timestamp": 1738402565,
+                        "metadata": {
+                            "jid": "6281316057489@s.whatsapp.net",
+                            "fromme": false,
+                            "id": "A1B2C3D4E5F605"
                     }
                 }
             }
         }
     """.trimIndent()
 
-    // Deserialize PushChat object
-    val pushChat = PushChat.fromJson(jsonStringInitial)
+    // ✅ Deserialize correctly using the fixed JSON configuration
+    val pushChat = PushChat.fromJson(jsonString)
 
-    // Deserialize message based on `mt`
-    val message = pushChat.data.initialChat?.parseMessage(pushChat.mt)
-
-    println(message)
-
+    println("✅ Deserialized PushChat: $pushChat")
 }

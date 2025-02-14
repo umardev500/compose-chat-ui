@@ -22,8 +22,6 @@ fun ChatItem(
     val profilePicUrl by remember { mutableStateOf<String?>(null) }
     val isUnread = chat.unread > 0
 
-    val message = chat.parseMessage(chat.mt)
-
     Row(
         modifier = Modifier
             .clickable {
@@ -40,13 +38,13 @@ fun ChatItem(
 
             // Chat Name and Time
             ChatNameWithTime(
-                message = message,
+                message = chat.message,
                 isUnread
             )
 
             // Bottom
             ChatMessageDetails(
-                message,
+                chat.message,
                 count = chat.unread,
             )
         }

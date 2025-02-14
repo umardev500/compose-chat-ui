@@ -2,27 +2,44 @@ package com.umar.chat.data.network
 
 import android.util.Log
 import com.umar.chat.BuildConfig
+import com.umar.chat.data.model.ApiResponse
+import com.umar.chat.data.model.Chat
 import com.umar.chat.data.model.PushChat
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.websocket.WebSockets
 import io.ktor.client.plugins.websocket.webSocket
+import io.ktor.client.request.get
 import io.ktor.http.HttpMethod
+import io.ktor.serialization.kotlinx.json.json
 import io.ktor.websocket.Frame
 import io.ktor.websocket.readText
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import javax.inject.Singleton
 
+@Singleton
 class ChatApiService {
     private val host = BuildConfig.API_HOST
     private val port = BuildConfig.API_PORT
     private val basePath = "/api/chat"
+    private val baseURL = "http://$host:$port$basePath"
 
     private val client = HttpClient(CIO) {
         install(WebSockets)
+        install(ContentNegotiation) {
+            json()
+        }
     }
 
-    suspend fun listenForMessage(): Flow<PushChat> = flow {
+    suspend fun fetchChats(csid: String): List<Chat> {
+        val response: ApiResponse<List<Chat>> = client.get("$baseURL?csid=$csid").body()
+        return response.data
+    }
+
+    fun listenForMessage(): Flow<PushChat> = flow {
         client.webSocket(
             method = HttpMethod.Get,
             host = host,
@@ -36,6 +53,7 @@ class ChatApiService {
                         val pushChat = PushChat.fromJson(text)
                         emit(pushChat)
                     }
+
                     else -> Unit
                 }
             }
