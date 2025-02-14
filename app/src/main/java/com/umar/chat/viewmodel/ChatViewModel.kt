@@ -49,19 +49,29 @@ class ChatViewModel @Inject constructor(
 
                     _chats.update { chats ->
                         when {
+                            // If a new chat is created, add it to the top of the list
                             newChat != null -> listOf(newChat) + chats
-                            newMesage != null -> chats.map { chat ->
-                                if (chat.jid == newMesage.getJid()) {
-                                    chat.copy(
-                                        message = pushChat.data.message,
-                                        unread = chat.unread + 1,
-                                    )
-                                } else {
-                                    chat
-                                }
 
+                            // If there's a new message, find and update the corresponding chat, then move it to the top
+                            newMesage != null -> {
+                                val updatedChats = chats.map { chat ->
+                                    if (chat.jid == newMesage.getJid()) {
+                                        chat.copy(
+                                            message = pushChat.data.message,
+                                            unread = chat.unread + 1,
+                                        )
+                                    } else {
+                                        // If the chat is not the target chat, return it unchanged
+                                        chat
+                                    }
+                                }
+                                // Move the updated chat to the top
+                                updatedChats.sortedByDescending { chat ->
+                                    if (chat.jid == newMesage.getJid()) Long.MAX_VALUE else chat.message?.timestamp
+                                }
                             }
 
+                            // If no new chat or message, return the current chat list as is
                             else -> chats
                         }
                     }
