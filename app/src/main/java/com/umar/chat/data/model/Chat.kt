@@ -31,9 +31,9 @@ sealed class Content
 data class Metadata(
     val type: String,
     val jid: String,
-    @SerialName("fromMe") val fromme: Boolean = false,
+    val fromme: Boolean = false,
     val id: String,
-    @SerialName("pushName") val pushname: String,
+    val pushname: String,
     val timestamp: Long
 )
 

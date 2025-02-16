@@ -30,8 +30,8 @@ class ChatViewModel @Inject constructor(
 
     private fun fetchChats() {
         viewModelScope.launch {
-//            val csid = userManager.getCsId()
-//            _chats.value = chatApiService.fetchChats(csid)
+            val csid = userManager.getCsId()
+            _chats.value = chatApiService.fetchChats(csid)
         }
     }
 
