@@ -4,7 +4,7 @@ import android.util.Log
 import com.umar.chat.BuildConfig
 import com.umar.chat.data.model.ApiResponse
 import com.umar.chat.data.model.Chat
-import com.umar.chat.data.model.PushChat
+import com.umar.chat.data.model.MessageBroadcastResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
@@ -36,11 +36,11 @@ class ChatApiService {
     }
 
     suspend fun fetchChats(csid: String): List<Chat> {
-        val response: ApiResponse<List<Chat>> = client.get("$baseURL?csid=$csid").body()
+        val response: ApiResponse<List<Chat>> = client.get("$baseURL?csid=$csid&token=xyz").body()
         return response.data
     }
 
-    fun listenForMessage(): Flow<PushChat> = flow {
+    fun listenForMessage(): Flow<MessageBroadcastResponse> = flow {
         client.webSocket(
             method = HttpMethod.Get,
             host = host,
@@ -51,8 +51,8 @@ class ChatApiService {
                 when (frame) {
                     is Frame.Text -> {
                         val text = frame.readText()
-                        val pushChat = PushChat.fromJson(text)
-                        emit(pushChat)
+                        val msg = MessageBroadcastResponse.fromJson(text)
+                        emit(msg)
                     }
 
                     else -> Unit

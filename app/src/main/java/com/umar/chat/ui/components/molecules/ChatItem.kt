@@ -38,13 +38,13 @@ fun ChatItem(
 
             // Chat Name and Time
             ChatNameWithTime(
-                message = chat.message,
+                metadata = chat.message?.metadata,
                 isUnread
             )
 
             // Bottom
             ChatMessageDetails(
-                chat.message,
+                chat.message?.getContent(),
                 count = chat.unread,
             )
         }
