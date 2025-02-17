@@ -23,6 +23,8 @@ class ChatViewModel @Inject constructor(
     private val _chats = MutableStateFlow<List<Chat>>(emptyList())
     val chats: StateFlow<List<Chat>> = _chats
 
+    private val profilePics = mutableMapOf<String, String>()
+
     init {
         listenForMessage()
         fetchChats()
@@ -32,6 +34,12 @@ class ChatViewModel @Inject constructor(
         viewModelScope.launch {
             val csid = userManager.getCsId()
             _chats.value = chatApiService.fetchChats(csid)
+        }
+    }
+
+    fun getProfilePic(jid: String): String {
+        return profilePics.getOrPut(jid) {
+            "https://pps.whatsapp.net/v/t61.24694-24/462342674_1071263851174303_4172258161012043213_n.jpg?stp=dst-jpg_s96x96_tt6&ccb=11-4&oh=01_Q5AaIPOxLPxv-QkCcLF5tyPEqHvvdqi0E1XjG1-Sz1Lfvpl_&oe=67C0245C&_nc_sid=5e03e0&_nc_cat=106"
         }
     }
 

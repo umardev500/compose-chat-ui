@@ -1,5 +1,6 @@
 package com.umar.chat.ui.components.molecules
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,14 +14,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.umar.chat.data.model.Chat
 import com.umar.chat.ui.components.atoms.Avatar
+import com.umar.chat.ui.screens.LocalChatScreenActions
 
 @Composable
 fun ChatItem(
     chat: Chat,
     navigate: (jid: String) -> Unit,
 ) {
-    val profilePicUrl by remember { mutableStateOf<String?>(null) }
     val isUnread = chat.unread > 0
+    val actions = LocalChatScreenActions.current
+    val picture = actions.getPicture(chat.jid)
 
     Row(
         modifier = Modifier
@@ -29,7 +32,7 @@ fun ChatItem(
             }
             .padding(horizontal = 16.dp, vertical = 16.dp)
     ) {
-        Avatar(imageUrl = profilePicUrl, isOnline = chat.isOnline)
+        Avatar(imageUrl = picture, isOnline = chat.isOnline)
         Column(
             modifier = Modifier
                 .padding(start = 16.dp),
