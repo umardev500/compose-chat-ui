@@ -1,11 +1,9 @@
 package com.umar.chat.data.model
 
-import android.util.Log
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.decodeFromJsonElement
 
 @Serializable
 data class Chat(
@@ -112,6 +110,12 @@ data class TypingData(
 ) : BroadcastData()
 
 @Serializable
+data class OnlineData(
+    val jid: String,
+    val online: Boolean = false
+) : BroadcastData()
+
+@Serializable
 data class WebsocketBroadcast(
     val type: String,
     val data: JsonElement? = null
@@ -128,6 +132,10 @@ data class WebsocketBroadcast(
         return when (type) {
             "typing" -> {
                 json.decodeFromJsonElement(TypingData.serializer(), data!!)
+            }
+
+            "online" -> {
+                json.decodeFromJsonElement(OnlineData.serializer(), data!!)
             }
 
             "message" -> {

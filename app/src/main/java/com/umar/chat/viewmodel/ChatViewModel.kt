@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.umar.chat.data.model.Chat
 import com.umar.chat.data.model.MessageBroadcastResponse
+import com.umar.chat.data.model.OnlineData
 import com.umar.chat.data.model.TypingData
 import com.umar.chat.data.network.ChatApiService
 import com.umar.chat.data.repository.UserManager
@@ -72,6 +73,18 @@ class ChatViewModel @Inject constructor(
                 }
                 .collect { broadcastData ->
                     when (broadcastData) {
+                        is OnlineData -> {
+                            _uiState.update { currentState ->
+                                val updatedChats = currentState.chats.map { chat ->
+                                    if (chat.jid == broadcastData.jid) {
+                                        chat.copy(isOnline = broadcastData.online)
+                                    } else chat
+                                }
+
+                                currentState.copy(chats = updatedChats)
+                            }
+                        }
+
                         is MessageBroadcastResponse -> {
                             val isInitial = broadcastData.isInitial
                             val newMesage = broadcastData.getMessage()
