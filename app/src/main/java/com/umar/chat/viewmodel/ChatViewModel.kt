@@ -1,7 +1,6 @@
 package com.umar.chat.viewmodel
 
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.umar.chat.data.model.Chat
@@ -20,9 +19,8 @@ class ChatViewModel @Inject constructor(
     private val chatApiService: ChatApiService,
     private val userManager: UserManager
 ) : ViewModel() {
-
-    private val _chats = MutableStateFlow<List<Chat>>(emptyList())
-    val chats: StateFlow<List<Chat>> = _chats
+    private val _uiState = MutableStateFlow(ChatUiState())
+    val uiState: StateFlow<ChatUiState> = _uiState
 
     private val profilePics = mutableMapOf<String, String>()
 
@@ -34,7 +32,16 @@ class ChatViewModel @Inject constructor(
     private fun fetchChats() {
         viewModelScope.launch {
             val csid = userManager.getCsId()
-            _chats.value = chatApiService.fetchChats(csid)
+
+            // ✅ Batch updates: Set loading state and update chats in a single emit
+            _uiState.update { it.copy(isLoading = true) }
+
+            val chatList = runCatching { chatApiService.fetchChats(csid) }
+                .getOrElse {
+                    emptyList()
+                }
+
+            _uiState.update { it.copy(isLoading = false, chats = chatList) }
         }
     }
 
@@ -63,18 +70,16 @@ class ChatViewModel @Inject constructor(
                     val newMesage = msg.getMessage()
                     val metadata = newMesage?.metadata
 
-                    _chats.update { chats ->
-                        when {
-                            // If a new chat is created, add it to the top of the list
+                    _uiState.update { currentState ->
+                        val updatedChats = when {
                             isInitial -> {
                                 msg.getInitialChat()?.let {
-                                    listOf(it) + chats
-                                } ?: chats
+                                    listOf(it)
+                                } ?: currentState.chats
                             }
 
-                            // If there's a new message, find and update the corresponding chat, then move it to the top
                             newMesage != null -> {
-                                val updatedChats = chats.map { chat ->
+                                currentState.chats.map { chat ->
                                     if (chat.jid == metadata?.jid) {
                                         chat.copy(
                                             message = newMesage,
@@ -84,19 +89,24 @@ class ChatViewModel @Inject constructor(
                                         // If the chat is not the target chat, return it unchanged
                                         chat
                                     }
-                                }
-                                // Move the updated chat to the top
-                                updatedChats.sortedByDescending { chat ->
+                                }.sortedByDescending { chat ->
                                     if (chat.jid == metadata?.jid) Long.MAX_VALUE else chat.message?.metadata?.timestamp
                                 }
                             }
 
-                            // If no new chat or message, return the current chat list as is
-                            else -> chats
+                            else -> currentState.chats
                         }
+
+                        currentState.copy(chats = updatedChats)
                     }
+
                 }
         }
     }
 
 }
+
+data class ChatUiState(
+    val chats: List<Chat> = emptyList(),
+    val isLoading: Boolean = false
+)

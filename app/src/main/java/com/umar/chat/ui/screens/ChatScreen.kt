@@ -29,7 +29,7 @@ val LocalChatScreenActions = staticCompositionLocalOf<ChatScreenActions> {
 @Composable
 fun ChatScreen(viewModel: ChatViewModel = hiltViewModel()) {
     val navigationActions: NavigationActions = LocalNavigationActions.current
-    val chats by viewModel.chats.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
 
     // Function to refresh chat data
     fun handleRefresh() {
@@ -59,8 +59,8 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel()) {
                 contentAlignment = Alignment.Center
             ) {
                 ChatList(
-                    chats = chats,
-                    isRefreshing = true,
+                    chats = uiState.chats,
+                    isRefreshing = uiState.isLoading,
                     onRefresh = ::handleRefresh,
                     onNavigate = ::handleNavigate,
                 )
