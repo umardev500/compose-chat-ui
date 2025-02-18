@@ -45,7 +45,13 @@ class ChatViewModel @Inject constructor(
                     emptyList()
                 }
 
-            _uiState.update { it.copy(isLoading = false, chats = chatList) }
+            _uiState.update { currentState ->
+                val updatedChats = chatList.map { chat ->
+                    chat.copy(isOnline = currentState.onlineStatuses[chat.jid] ?: false)
+                }
+
+                currentState.copy(isLoading = false, chats = updatedChats)
+            }
         }
     }
 
@@ -75,13 +81,18 @@ class ChatViewModel @Inject constructor(
                     when (broadcastData) {
                         is OnlineData -> {
                             _uiState.update { currentState ->
+                                val updatedStatuses = currentState.onlineStatuses.toMutableMap()
+                                updatedStatuses[broadcastData.jid] = broadcastData.online
+
+
                                 val updatedChats = currentState.chats.map { chat ->
-                                    if (chat.jid == broadcastData.jid) {
-                                        chat.copy(isOnline = broadcastData.online)
-                                    } else chat
+                                    chat.copy(isOnline = updatedStatuses[chat.jid] ?: false)
                                 }
 
-                                currentState.copy(chats = updatedChats)
+                                currentState.copy(
+                                    onlineStatuses = updatedStatuses,
+                                    chats = updatedChats
+                                )
                             }
                         }
 
@@ -151,5 +162,6 @@ class ChatViewModel @Inject constructor(
 
 data class ChatUiState(
     val chats: List<Chat> = emptyList(),
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val onlineStatuses: Map<String, Boolean> = emptyMap()
 )
