@@ -1,6 +1,7 @@
 package com.umar.chat.viewmodel
 
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.umar.chat.data.model.Chat
@@ -37,9 +38,15 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun getProfilePic(jid: String): String {
+    suspend fun getProfilePic(jid: String): String {
         return profilePics.getOrPut(jid) {
-            "https://pps.whatsapp.net/v/t61.24694-24/462342674_1071263851174303_4172258161012043213_n.jpg?stp=dst-jpg_s96x96_tt6&ccb=11-4&oh=01_Q5AaIPOxLPxv-QkCcLF5tyPEqHvvdqi0E1XjG1-Sz1Lfvpl_&oe=67C0245C&_nc_sid=5e03e0&_nc_cat=106"
+            val provilePicUrl = runCatching {
+                chatApiService.getProfilePic(jid)
+            }.getOrElse {
+                null
+            }
+
+            provilePicUrl ?: ""
         }
     }
 

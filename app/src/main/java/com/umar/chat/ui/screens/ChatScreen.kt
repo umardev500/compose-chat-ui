@@ -19,7 +19,7 @@ import com.umar.chat.ui.components.organisms.ChatList
 import com.umar.chat.viewmodel.ChatViewModel
 
 data class ChatScreenActions(
-    val getPicture: (jid: String) -> String
+    val getPicture: suspend (jid: String) -> String
 )
 
 val LocalChatScreenActions = staticCompositionLocalOf<ChatScreenActions> {

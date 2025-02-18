@@ -40,6 +40,20 @@ class ChatApiService {
         return response.data
     }
 
+    suspend fun getProfilePic(jid: String): String? {
+        return try {
+            val response: ApiResponse<String> =
+                client.get("$baseURL/wa-picture/$jid?token=xyz").body()
+            if (response.success) {
+                response.data
+            } else {
+                throw Exception("Failed to fetch profile picture $jid")
+            }
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     fun listenForMessage(): Flow<MessageBroadcastResponse> = flow {
         client.webSocket(
             method = HttpMethod.Get,
