@@ -3,8 +3,9 @@ package com.umar.chat.data.network
 import android.util.Log
 import com.umar.chat.BuildConfig
 import com.umar.chat.data.model.ApiResponse
+import com.umar.chat.data.model.BroadcastData
 import com.umar.chat.data.model.Chat
-import com.umar.chat.data.model.MessageBroadcastResponse
+import com.umar.chat.data.model.WebsocketBroadcast
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
@@ -54,7 +55,7 @@ class ChatApiService {
         }
     }
 
-    fun listenForMessage(): Flow<MessageBroadcastResponse> = flow {
+    fun listenForMessage(): Flow<BroadcastData> = flow {
         client.webSocket(
             method = HttpMethod.Get,
             host = host,
@@ -65,8 +66,9 @@ class ChatApiService {
                 when (frame) {
                     is Frame.Text -> {
                         val text = frame.readText()
-                        val msg = MessageBroadcastResponse.fromJson(text)
-                        emit(msg)
+                        val broadcastData = WebsocketBroadcast.fromJson(text)
+                        val data = broadcastData.getData()
+                        data?.let { emit(it) }
                     }
 
                     else -> Unit

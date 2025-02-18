@@ -5,6 +5,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.decodeFromJsonElement
 
 @Serializable
 data class Chat(
@@ -14,6 +15,7 @@ data class Chat(
     val unread: Int,
     val message: Message? = null,
     val isOnline: Boolean = false,
+    val isTyping: Boolean = false,
 )
 
 
@@ -71,7 +73,7 @@ data class Message(
 data class MessageBroadcastResponse(
     val isInitial: Boolean,
     val data: JsonElement? = null
-) {
+) : BroadcastData() {
     companion object {
         private val json = Json { ignoreUnknownKeys = true }
 
@@ -99,6 +101,44 @@ data class MessageBroadcastResponse(
         }
     }
 }
+
+@Serializable
+sealed class BroadcastData
+
+@Serializable
+data class TypingData(
+    val jid: String,
+    val typing: Boolean? = false
+) : BroadcastData()
+
+@Serializable
+data class WebsocketBroadcast(
+    val type: String,
+    val data: JsonElement? = null
+) {
+    companion object {
+        private val json = Json { ignoreUnknownKeys = true }
+
+        fun fromJson(jsonString: String): WebsocketBroadcast {
+            return json.decodeFromString(jsonString)
+        }
+    }
+
+    fun getData(): BroadcastData? {
+        return when (type) {
+            "typing" -> {
+                json.decodeFromJsonElement(TypingData.serializer(), data!!)
+            }
+
+            "message" -> {
+                json.decodeFromJsonElement(MessageBroadcastResponse.serializer(), data!!)
+            }
+
+            else -> null
+        }
+    }
+}
+
 
 fun main() {
     val jsonString = """

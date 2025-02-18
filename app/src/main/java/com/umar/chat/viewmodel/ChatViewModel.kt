@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.umar.chat.data.model.Chat
+import com.umar.chat.data.model.MessageBroadcastResponse
+import com.umar.chat.data.model.TypingData
 import com.umar.chat.data.network.ChatApiService
 import com.umar.chat.data.repository.UserManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -68,40 +70,61 @@ class ChatViewModel @Inject constructor(
                 .catch {
                     Log.d("ChatLog", "Error: $it")
                 }
-                .collect { msg ->
-                    val isInitial = msg.isInitial
-                    val newMesage = msg.getMessage()
-                    val metadata = newMesage?.metadata
+                .collect { broadcastData ->
+                    when (broadcastData) {
+                        is MessageBroadcastResponse -> {
+                            val isInitial = broadcastData.isInitial
+                            val newMesage = broadcastData.getMessage()
+                            val metadata = newMesage?.metadata
 
-                    _uiState.update { currentState ->
-                        val updatedChats = when {
-                            isInitial -> {
-                                msg.getInitialChat()?.let {
-                                    listOf(it)
-                                } ?: currentState.chats
-                            }
-
-                            newMesage != null -> {
-                                currentState.chats.map { chat ->
-                                    if (chat.jid == metadata?.jid) {
-                                        chat.copy(
-                                            message = newMesage,
-                                            unread = chat.unread + 1,
-                                        )
-                                    } else {
-                                        // If the chat is not the target chat, return it unchanged
-                                        chat
+                            _uiState.update { currentState ->
+                                val updatedChats = when {
+                                    isInitial -> {
+                                        broadcastData.getInitialChat()?.let {
+                                            listOf(it)
+                                        } ?: currentState.chats
                                     }
-                                }.sortedByDescending { chat ->
-                                    if (chat.jid == metadata?.jid) Long.MAX_VALUE else chat.message?.metadata?.timestamp
-                                }
-                            }
 
-                            else -> currentState.chats
+                                    newMesage != null -> {
+                                        currentState.chats.map { chat ->
+                                            if (chat.jid == metadata?.jid) {
+                                                chat.copy(
+                                                    message = newMesage,
+                                                    unread = chat.unread + 1,
+                                                    isTyping = false // reset typing state on message is submited
+                                                )
+                                            } else {
+                                                // If the chat is not the target chat, return it unchanged
+                                                chat
+                                            }
+                                        }.sortedByDescending { chat ->
+                                            if (chat.jid == metadata?.jid) Long.MAX_VALUE else chat.message?.metadata?.timestamp
+                                        }
+                                    }
+
+                                    else -> currentState.chats
+                                }
+
+                                currentState.copy(chats = updatedChats)
+                            }
                         }
 
-                        currentState.copy(chats = updatedChats)
+                        is TypingData -> {
+                            _uiState.update { currentState ->
+                                val updatedChats = currentState.chats.map { chat ->
+                                    if (chat.jid == broadcastData.jid) {
+                                        broadcastData.typing?.let { chat.copy(isTyping = it) }
+                                            ?: chat
+                                    } else {
+                                        chat
+                                    }
+                                }
+
+                                currentState.copy(chats = updatedChats)
+                            }
+                        }
                     }
+
 
                 }
         }
