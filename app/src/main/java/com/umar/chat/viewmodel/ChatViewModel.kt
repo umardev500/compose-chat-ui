@@ -7,6 +7,7 @@ import com.umar.chat.data.model.Chat
 import com.umar.chat.data.network.ChatApiService
 import com.umar.chat.data.repository.UserManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -23,10 +24,10 @@ class ChatViewModel @Inject constructor(
     val uiState: StateFlow<ChatUiState> = _uiState
 
     private val profilePics = mutableMapOf<String, String>()
+    private var listenJob: Job? = null
 
     init {
-        listenForMessage()
-        fetchChats()
+        refresh()
     }
 
     private fun fetchChats() {
@@ -60,7 +61,9 @@ class ChatViewModel @Inject constructor(
     private fun listenForMessage() {
         Log.d("ChatLog", "Listening for messages...")
 
-        viewModelScope.launch {
+        listenJob?.cancel()
+
+        listenJob = viewModelScope.launch {
             chatApiService.listenForMessage()
                 .catch {
                     Log.d("ChatLog", "Error: $it")
@@ -104,6 +107,10 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    fun refresh() {
+        fetchChats()
+        listenForMessage()
+    }
 }
 
 data class ChatUiState(

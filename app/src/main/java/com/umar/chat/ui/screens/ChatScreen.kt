@@ -1,5 +1,6 @@
 package com.umar.chat.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -33,6 +34,8 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel()) {
 
     // Function to refresh chat data
     fun handleRefresh() {
+        Log.d("ChatLog", "Refreshing...")
+        viewModel.refresh()
     }
 
     // Function to handle navigation to messaging screen
