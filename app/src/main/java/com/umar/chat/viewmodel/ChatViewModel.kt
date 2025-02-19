@@ -105,7 +105,7 @@ class ChatViewModel @Inject constructor(
                                 val updatedChats = when {
                                     isInitial -> {
                                         broadcastData.getInitialChat()?.let {
-                                            listOf(it)
+                                            listOf(it) + currentState.chats
                                         } ?: currentState.chats
                                     }
 
