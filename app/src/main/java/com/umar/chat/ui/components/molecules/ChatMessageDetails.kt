@@ -36,7 +36,7 @@ fun ChatMessageDetails(message: Content?, count: Int, isTyping: Boolean = false)
         // Higlight message
         if (isTyping) {
             Text(
-                text = "Typing...",
+                text = "typing...",
                 color = Green600,
                 maxLines = 1,
                 fontWeight = FontWeight.Medium,
