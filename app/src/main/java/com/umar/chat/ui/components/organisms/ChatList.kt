@@ -3,6 +3,7 @@ package com.umar.chat.ui.components.organisms
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -36,11 +37,12 @@ fun ChatList(
                 }
             }
 
-            items(chats.size, key = { it }) { index ->
-                val chat = chats[index]
-                ChatItem(chat = chat, navigate = onNavigate)
+            items(chats, key = { it.jid } ) { chat ->
+                ChatItem(
+                    chat = chat,
+                    navigate = onNavigate
+                )
             }
-
         }
     }
 }
