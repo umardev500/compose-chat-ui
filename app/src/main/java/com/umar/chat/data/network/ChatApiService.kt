@@ -51,7 +51,7 @@ class ChatApiService {
                 throw Exception("Failed to fetch profile picture $jid")
             }
         } catch (e: Exception) {
-            null
+            throw e
         }
     }
 

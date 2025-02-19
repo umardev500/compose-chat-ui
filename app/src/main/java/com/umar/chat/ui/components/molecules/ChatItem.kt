@@ -27,7 +27,7 @@ fun ChatItem(
     val isUnread = chat.unread > 0
     val actions = LocalChatScreenActions.current
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(chat) {
         picture = actions.getPicture(chat.jid)
     }
 
