@@ -34,7 +34,7 @@ data class Metadata(
     val fromme: Boolean = false,
     val id: String,
     val pushname: String,
-    val timestamp: Long
+    val timestamp: Long = 0L
 )
 
 @Serializable
