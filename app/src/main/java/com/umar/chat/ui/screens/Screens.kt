@@ -6,6 +6,8 @@ object ScreenParams {
 
 sealed class Screens(val route: String) {
     data object Chat : Screens("chat")
+    data object Notifications : Screens("notifications")
+    data object Settings : Screens("settings")
     data object Messaging : Screens("messaging/{${ScreenParams.JID}}") {
         fun createRoute(jid: String) = "messaging/$jid"
     }

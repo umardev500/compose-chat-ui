@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation.NavHostController
 import com.umar.chat.ui.components.atoms.IconType
 import com.umar.chat.ui.components.atoms.MsIconRounded
 import com.umar.chat.ui.components.atoms.MsIconRoundedFill
@@ -17,10 +18,15 @@ sealed class NavigationIcon {
     data class CustomIcon(val icon: IconType) : NavigationIcon()
 }
 
-data class NavigationBarItem(val route: String, val icon: NavigationIcon, val fillSelected: Boolean = false, val label: String)
+data class NavigationBarItem(
+    val route: String,
+    val icon: NavigationIcon,
+    val fillSelected: Boolean = false,
+    val label: String
+)
 
 @Composable
-fun BottomNavigationBar() {
+fun BottomNavigationBar(navController: NavHostController) {
     val items = listOf(
         NavigationBarItem(
             route = Screens.Chat.route,
@@ -35,13 +41,13 @@ fun BottomNavigationBar() {
             label = "Queue"
         ),
         NavigationBarItem(
-            route = Screens.Chat.route,
+            route = Screens.Notifications.route,
             icon = NavigationIcon.CustomIcon(icon = IconType.NOTIFICATONS),
             fillSelected = true,
             label = "Notifications"
         ),
         NavigationBarItem(
-            route = Screens.Chat.route,
+            route = Screens.Settings.route,
             icon = NavigationIcon.CustomIcon(icon = IconType.SETTINGS),
             fillSelected = true,
             label = "Settings"
@@ -58,6 +64,7 @@ fun BottomNavigationBar() {
                 selected = selectedIndex.intValue == index,
                 onClick = {
                     selectedIndex.intValue = index
+                    navController.navigate(item.route)
                 },
                 icon = {
                     when (val icon = item.icon) {

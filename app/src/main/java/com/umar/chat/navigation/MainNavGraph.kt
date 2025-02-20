@@ -3,19 +3,20 @@ package com.umar.chat.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.umar.chat.ui.screens.ChatScreen
 import com.umar.chat.ui.screens.MessagingScreen
+import com.umar.chat.ui.screens.NotificationScreen
 import com.umar.chat.ui.screens.Screens
+import com.umar.chat.ui.screens.SettingScreen
 
 @Composable
 fun MainNavGraph(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navController: NavHostController
 ) {
-    val navController = rememberNavController()
-
     val navigationActions = remember {
         NavigationActions(
             navigateToMessaging = { jid ->
@@ -43,6 +44,24 @@ fun MainNavGraph(
                 popExitTransition = { SlideTransition.popExit }
             ) {
                 ChatScreen()
+            }
+            composable(
+                route = Screens.Notifications.route,
+                enterTransition = { SlideTransition.enter },
+                exitTransition = { SlideTransition.exit },
+                popEnterTransition = { SlideTransition.popEnter },
+                popExitTransition = { SlideTransition.popExit }
+            ) {
+                NotificationScreen()
+            }
+            composable(
+                route = Screens.Settings.route,
+                enterTransition = { SlideTransition.enter },
+                exitTransition = { SlideTransition.exit },
+                popEnterTransition = { SlideTransition.popEnter },
+                popExitTransition = { SlideTransition.popExit }
+            ) {
+                SettingScreen()
             }
             composable(
                 route = Screens.Messaging.route,
