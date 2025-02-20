@@ -19,7 +19,7 @@ fun formatEpochTime(epochSeonds: Long): String {
 
     return when {
         localDate == now -> hourPattern
-        localDate == yesterday -> "Yesterday $hourPattern"
+        localDate == yesterday -> "Yesterday"
         localDate.isAfter(startOfWeek) -> dateTime.format(DateTimeFormatter.ofPattern("E HH:mm")) // Same week
 
         else -> dateTime.format(DateTimeFormatter.ofPattern("M/d/yyyy")) // Older than a week
