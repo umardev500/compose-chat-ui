@@ -1,5 +1,7 @@
 package com.umar.chat.navigation
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -38,28 +40,28 @@ fun MainNavGraph(
         ) {
             composable(
                 route = Screens.Chat.route,
-                enterTransition = { SlideTransition.enter },
-                exitTransition = { SlideTransition.exit },
-                popEnterTransition = { SlideTransition.popEnter },
-                popExitTransition = { SlideTransition.popExit }
+                enterTransition = { EnterTransition.None },
+                exitTransition = { ExitTransition.None },
+                popEnterTransition = { EnterTransition.None },
+                popExitTransition = { ExitTransition.None }
             ) {
                 ChatScreen()
             }
             composable(
                 route = Screens.Notifications.route,
-                enterTransition = { SlideTransition.enter },
-                exitTransition = { SlideTransition.exit },
-                popEnterTransition = { SlideTransition.popEnter },
-                popExitTransition = { SlideTransition.popExit }
+                enterTransition = { EnterTransition.None },
+                exitTransition = { ExitTransition.None },
+                popEnterTransition = { EnterTransition.None },
+                popExitTransition = { ExitTransition.None }
             ) {
                 NotificationScreen()
             }
             composable(
                 route = Screens.Settings.route,
-                enterTransition = { SlideTransition.enter },
-                exitTransition = { SlideTransition.exit },
-                popEnterTransition = { SlideTransition.popEnter },
-                popExitTransition = { SlideTransition.popExit }
+                enterTransition = { EnterTransition.None },
+                exitTransition = { ExitTransition.None },
+                popEnterTransition = { EnterTransition.None },
+                popExitTransition = { ExitTransition.None }
             ) {
                 SettingScreen()
             }
