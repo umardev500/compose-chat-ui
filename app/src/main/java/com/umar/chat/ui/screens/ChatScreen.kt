@@ -54,9 +54,6 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel()) {
 
     CompositionLocalProvider(LocalChatScreenActions provides actions) {
         Scaffold(
-            bottomBar = {
-                BottomNavigationBar()
-            },
             topBar = {
                 ChatHeader()
             }

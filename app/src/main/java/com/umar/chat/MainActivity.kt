@@ -4,10 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.umar.chat.navigation.MainNavGraph
+import com.umar.chat.ui.screens.MainScreen
 import com.umar.chat.ui.theme.ChatTheme
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.HiltAndroidApp
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -16,7 +15,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ChatTheme {
-                MainNavGraph()
+                MainScreen()
             }
         }
     }
