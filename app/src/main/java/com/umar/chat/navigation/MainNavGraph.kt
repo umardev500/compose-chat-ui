@@ -11,6 +11,7 @@ import androidx.navigation.compose.composable
 import com.umar.chat.ui.screens.ChatScreen
 import com.umar.chat.ui.screens.MessagingScreen
 import com.umar.chat.ui.screens.NotificationScreen
+import com.umar.chat.ui.screens.QueueScreen
 import com.umar.chat.ui.screens.Screens
 import com.umar.chat.ui.screens.SettingScreen
 
@@ -55,7 +56,7 @@ fun MainNavGraph(
                 popEnterTransition = { EnterTransition.None },
                 popExitTransition = { ExitTransition.None }
             ) {
-                ChatScreen()
+                QueueScreen()
             }
             composable(
                 route = Screens.Notifications.route,
