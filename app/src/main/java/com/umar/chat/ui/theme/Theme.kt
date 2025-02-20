@@ -1,6 +1,5 @@
 package com.umar.chat.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -9,6 +8,8 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
@@ -18,13 +19,13 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
+    primary = Green600,
     secondary = PurpleGrey40,
-    tertiary = Pink40
+    tertiary = Pink40,
 
+    background = Color(0xFFFFFFFF),
+    surface = Color(0xFFFFFFFF),
     /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
     onPrimary = Color.White,
     onSecondary = Color.White,
     onTertiary = Color.White,
@@ -32,6 +33,44 @@ private val LightColorScheme = lightColorScheme(
     onSurface = Color(0xFF1C1B1F),
     */
 )
+
+@Immutable
+data class NavBarColors(
+    val indicator: Color,
+)
+
+@Immutable
+data class CommonColors(
+    val separator: Color,
+)
+
+@Immutable
+data class CustomColors(
+    val navbar: NavBarColors,
+    val common: CommonColors,
+)
+
+val lightCustomColors = CustomColors(
+    navbar = NavBarColors(
+        indicator = Color(0xFFDCF8C6)
+    ),
+    common = CommonColors(
+        separator = Color.LightGray
+    )
+)
+
+val darkCustomColors = CustomColors(
+    navbar = NavBarColors(
+        indicator = Purple80
+    ),
+    common = CommonColors(
+        separator = Color.LightGray
+    )
+)
+
+val MaterialTheme.customColors: CustomColors
+    @Composable
+    get() = if (isSystemInDarkTheme()) darkCustomColors else lightCustomColors
 
 @Composable
 fun ChatTheme(

@@ -13,6 +13,9 @@ val Pink40 = Color(0xFF7D5260)
 
 // Tailwind Color
 val Green600 = Color(0xFF00a63e)
+val Green100 = Color(0xFFdcfce7)
+val Green200 = Color(0xFFb9f8cf)
+val Green300 = Color(0xFF7bf1a8)
 
 
 val Gray400 = Color(0xFF99a1af)
