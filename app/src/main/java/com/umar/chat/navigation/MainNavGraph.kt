@@ -47,6 +47,16 @@ fun MainNavGraph(
             ) {
                 ChatScreen()
             }
+
+            composable(
+                route = Screens.Queue.route,
+                enterTransition = { EnterTransition.None },
+                exitTransition = { ExitTransition.None },
+                popEnterTransition = { EnterTransition.None },
+                popExitTransition = { ExitTransition.None }
+            ) {
+                ChatScreen()
+            }
             composable(
                 route = Screens.Notifications.route,
                 enterTransition = { EnterTransition.None },

@@ -36,7 +36,7 @@ fun BottomNavigationBar(navController: NavHostController) {
             label = "Home"
         ),
         NavigationBarItem(
-            route = Screens.Chat.route,
+            route = Screens.Queue.route,
             icon = NavigationIcon.CustomIcon(icon = IconType.SCHEDULE),
             fillSelected = true,
             label = "Queue"

@@ -6,6 +6,7 @@ object ScreenParams {
 
 sealed class Screens(val route: String) {
     data object Chat : Screens("chat")
+    data object Queue : Screens("queue")
     data object Notifications : Screens("notifications")
     data object Settings : Screens("settings")
     data object Messaging : Screens("messaging/{${ScreenParams.JID}}") {
