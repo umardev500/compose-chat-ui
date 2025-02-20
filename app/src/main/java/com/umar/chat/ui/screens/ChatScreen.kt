@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.umar.chat.navigation.LocalNavigationActions
 import com.umar.chat.navigation.NavigationActions
+import com.umar.chat.ui.components.organisms.BottomNavigationBar
 import com.umar.chat.ui.components.organisms.ChatHeader
 import com.umar.chat.ui.components.organisms.ChatList
 import com.umar.chat.viewmodel.ChatViewModel
@@ -53,6 +54,9 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel()) {
 
     CompositionLocalProvider(LocalChatScreenActions provides actions) {
         Scaffold(
+            bottomBar = {
+                BottomNavigationBar()
+            },
             topBar = {
                 ChatHeader()
             }

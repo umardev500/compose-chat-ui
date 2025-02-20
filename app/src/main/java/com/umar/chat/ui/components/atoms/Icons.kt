@@ -16,7 +16,10 @@ enum class IconType(val unicode: String, val type: String) {
     MORE_VERT("\uE5D4", "more"),
     MORE_HORIZ("\uE5D3", "more"),
     SETTINGS("\uE8B8", "settings"),
-    ARROW_BACK("\uE5C4", "arrow");
+    ARROW_BACK("\uE5C4", "arrow"),
+    TASK_ALT("\ue2e6", "arrow"),
+    SCHEDULE("\ue8b5", "arrow"),
+    NOTIFICATONS("\ue7f4", "arrow");
 }
 
 
