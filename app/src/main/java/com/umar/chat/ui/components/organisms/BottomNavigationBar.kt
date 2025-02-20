@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.umar.chat.ui.components.atoms.IconType
 import com.umar.chat.ui.components.atoms.MsIconRounded
 import com.umar.chat.ui.components.atoms.MsIconRoundedFill
@@ -58,19 +59,35 @@ fun BottomNavigationBar(navController: NavHostController) {
         mutableIntStateOf(0)
     }
 
+    // Observe the current back stack entry
+    val navBackStackEntry = navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry.value?.destination?.route
+
     NavigationBar {
-        items.forEachIndexed { index, item ->
+        items.forEach { item ->
             NavigationBarItem(
-                selected = selectedIndex.intValue == index,
+                selected = currentRoute == item.route,
                 onClick = {
-                    selectedIndex.intValue = index
-                    navController.navigate(item.route)
+                    if (currentRoute != item.route) {
+                        navController.navigate(item.route) {
+                            // Prevent multiple copies of the same destination
+                            launchSingleTop = true
+
+                            // Pop up to the start destination but save state
+                            popUpTo(navController.graph.startDestinationId) {
+                                saveState = true
+                            }
+
+                            // Restore state when re-selecting a tab
+                            restoreState = true
+                        }
+                    }
                 },
                 icon = {
                     when (val icon = item.icon) {
                         is NavigationIcon.VectorIcon -> {}
                         is NavigationIcon.CustomIcon -> {
-                            if (item.fillSelected && selectedIndex.intValue == index) {
+                            if (item.fillSelected && currentRoute == item.route) {
                                 MsIconRoundedFill(icon.icon)
                             } else {
                                 MsIconRounded(icon.icon)
