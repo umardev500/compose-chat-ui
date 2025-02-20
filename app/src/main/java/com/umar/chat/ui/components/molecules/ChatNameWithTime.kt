@@ -28,8 +28,8 @@ fun ChatNameWithTime(
         Text(
             text = metadata?.pushname ?: "",
             style = TextStyle(
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold,
                 color = Gray700
             ),
             modifier = Modifier.weight(1f)

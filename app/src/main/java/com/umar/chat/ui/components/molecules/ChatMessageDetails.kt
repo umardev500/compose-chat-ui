@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.sp
 import com.umar.chat.data.model.Content
 import com.umar.chat.data.model.TextMessage
 import com.umar.chat.ui.components.atoms.MessageCount
@@ -46,9 +47,10 @@ fun ChatMessageDetails(message: Content?, count: Int, isTyping: Boolean = false)
         } else {
             Text(
                 text = higlightMessage,
-                fontWeight = if (isUnread) FontWeight.Medium else FontWeight.Normal,
+                fontWeight = if (isUnread) FontWeight.Normal else FontWeight.Normal,
                 color = if (isUnread) Gray800 else Gray600,
                 maxLines = 1,
+                fontSize = 15.sp,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f)
             )
