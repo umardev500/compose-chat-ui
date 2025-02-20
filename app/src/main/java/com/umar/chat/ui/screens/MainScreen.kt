@@ -1,6 +1,7 @@
 package com.umar.chat.ui.screens
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -16,6 +17,10 @@ fun MainScreen() {
             BottomNavigationBar()
         }
     ) { padding ->
-        MainNavGraph(Modifier.padding(padding))
+        MainNavGraph(
+            Modifier
+                .padding(padding)
+                .consumeWindowInsets(padding) // Prevfent double padding
+        )
     }
 }
